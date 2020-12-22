@@ -1,17 +1,6 @@
 import React, { Component } from "react";
-import axios from 'axios';
+import http from "./services/httpService";
 import "./App.css";
-
-axios.interceptors.response.use(null, error => {
-  const expectedError = error.response && error.response.status >= 400 && error.response.status < 500;
-
-  if (expectedError) {
-    console.log('Logging the error', error);
-    alert('An unexpected error occurred.');
-  }
-
-  return Promise.reject(error); // returns a rejected promise with the error
-})
 
 const apiEndpoint = "https://jsonplaceholder.typicode.com/posts";
 
@@ -22,13 +11,13 @@ class App extends Component {
 
   async componentDidMount() { // call server when component mounts
     // Promise: pending > resolved (success) || rejected (failure)
-    const { data: posts } = await axios.get(apiEndpoint); // send http request, get data
+    const { data: posts } = await http.get(apiEndpoint); // send http request, get data
     this.setState({ posts }); // update our posts
   }
 
   handleAdd = async () => {
     const obj = { title: 'a', body: 'b' };
-    const { data: post } = await axios.post(apiEndpoint, obj); // send object/post to the server
+    const { data: post } = await http.post(apiEndpoint, obj); // send object/post to the server
 
     const posts = [post, ...this.state.posts]; // clone posts array with new post
     this.setState({ posts });
@@ -36,7 +25,7 @@ class App extends Component {
 
   handleUpdate = async post => {
     post.title = "UPDATED";
-    await axios.put(`${apiEndpoint}/${post.id}`, post); // send update to server
+    await http.put(`${apiEndpoint}/${post.id}`, post); // send update to server
    
     const posts = [...this.state.posts];  // clone posts array
     const index = posts.indexOf(post);  // find index of this specific post
@@ -51,8 +40,8 @@ class App extends Component {
     this.setState({ posts });
 
     try {
-      await axios.delete(`${apiEndpoint}/${post.id}`);
-      // await axios.delete("s" + apiEndpoint + "/" + post.id);
+      await http.delete(`${apiEndpoint}/${post.id}`);
+      // await http.delete("s" + apiEndpoint + "/" + post.id);
     }
     catch (ex) {  // if delete fails, set state to original posts
       if (ex.response && ex.response.status === 404)

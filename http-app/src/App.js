@@ -33,8 +33,19 @@ class App extends Component {
     this.setState({ posts });
   };
 
-  handleDelete = post => {
-    console.log("Delete", post);
+  handleDelete = async post => {  // optimistic update (await is after the setState)
+    const originalPosts = this.state.posts;
+
+    const posts = this.state.posts.filter(p => p.id !== post.id); // save all posts except one that is being deleted
+    this.setState({ posts });
+
+    try {
+      await axios.delete(`${apiEndpoint}/${post.id}`);
+    }
+    catch (ex) {  // if delete fails, set state to original posts
+      alert('Something failed while deleting a post.');
+      this.setState({ posts: originalPosts });
+    }
   };
 
   render() {

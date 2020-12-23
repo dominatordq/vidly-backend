@@ -41,7 +41,7 @@ class App extends Component {
     this.setState({ posts });
 
     try {
-      await http.delete(`${config.apiEndpoint}/${post.id}`);
+      await http.delete(`s${config.apiEndpoint}/${post.id}`);
       // await http.delete("s" + apiEndpoint + post.id);
     }
     catch (ex) {  // if delete fails, set state to original posts
